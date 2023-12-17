@@ -23,3 +23,7 @@ spring:
       hibernate.default_batch_fetch_size: 1000
   # use data.sql file for dummy data
   sql.init.mode: always
+
+cors:
+  allowed-origin-dev: ${ALLOWED_ORIGIN_DEV}
+  allowed-origin-deploy: ${ALLOWED_ORIGIN_DEPLOY}
