@@ -23,6 +23,11 @@ spring:
       hibernate.default_batch_fetch_size: 1000
   # use data.sql file for dummy data
   sql.init.mode: always
+  # s3 multipart file config
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 cors:
   allowed-origin-dev: ${ALLOWED_ORIGIN_DEV}
