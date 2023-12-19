@@ -44,4 +44,8 @@ public class Photo extends BaseTimeEntity {
     public void setPassword(String encodedPassword) {
         this.password = encodedPassword;
     }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
 }

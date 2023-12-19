@@ -1,20 +1,24 @@
 package com.snowmanvillage.server.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snowmanvillage.server.dto.PhotoRequestDto;
+import com.snowmanvillage.server.dto.PhotoResponseDto;
 import com.snowmanvillage.server.dto.PhotoUploadRequestDto;
 import com.snowmanvillage.server.entity.Photo;
 import com.snowmanvillage.server.repository.PhotoRepository;
 import com.snowmanvillage.server.service.PasswordBCryptService;
-import com.snowmanvillage.server.service.PhotoUploadService;
+import com.snowmanvillage.server.service.PhotoService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -24,7 +28,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @RequiredArgsConstructor
 public class PhotoController {
 
-    private final PhotoUploadService photoUploadService;
+    private final PhotoService photoService;
     private final PasswordBCryptService passwordBCryptService;
     private final ObjectMapper objectMapper;
     private final PhotoRepository photoRepository;
@@ -39,7 +43,7 @@ public class PhotoController {
             String request = httpServletRequest.getParameter("request");
             PhotoUploadRequestDto requestDto = objectMapper.readValue(request, PhotoUploadRequestDto.class);
             String encodedPassword = passwordBCryptService.encodePassword(requestDto.getPassword());
-            Photo savedPhoto = photoUploadService.uploadPhoto(image, requestDto);
+            Photo savedPhoto = photoService.uploadPhoto(image, requestDto);
             savedPhoto.setPassword(encodedPassword);
             photoRepository.save(savedPhoto);
             return ResponseEntity.ok("포토 등록 완료");
@@ -48,4 +52,22 @@ public class PhotoController {
         }
     }
 
+    @GetMapping("/{photoId}")
+    public ResponseEntity<PhotoResponseDto> getPhoto(@PathVariable(name = "photoId") Long photoId) {
+        return ResponseEntity.ok(photoService.getPhotoByPhotoId(photoId));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<PhotoResponseDto>> getPhotoList(@RequestParam(name = "orderBy") String orderBy) {
+        return ResponseEntity.ok(photoService.getPhotoList(orderBy));
+    }
+
+    @PostMapping("/delete/{photoId}")
+    public ResponseEntity<String> deletePhoto(@PathVariable(name = "photoId") Long photoId, @RequestBody PhotoRequestDto requestDto) {
+        try {
+            return ResponseEntity.ok(photoService.deletePhoto(photoId, requestDto.getPassword()));
+        } catch (Exception e) {
+            return ResponseEntity.ok("포토 삭제 실패");
+        }
+    }
 }
