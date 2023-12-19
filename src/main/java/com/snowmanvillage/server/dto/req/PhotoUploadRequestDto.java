@@ -1,4 +1,4 @@
-package com.snowmanvillage.server.dto;
+package com.snowmanvillage.server.dto.req;
 
 import com.snowmanvillage.server.entity.Photo;
 import lombok.AllArgsConstructor;
