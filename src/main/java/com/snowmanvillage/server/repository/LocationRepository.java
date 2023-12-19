@@ -11,9 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    // roadName, lotNumber 에 searchValue 가 포함되어 있는 Location 을 반환
     @Query("SELECT l.photo FROM Location l "
-        + "WHERE l.roadName LIKE %:searchValue% "
-        + "OR l.lotNumber LIKE %:searchValue%")
+        + "WHERE l.address LIKE %:searchValue% ")
     List<Photo> findByLocationContaining(@Param("searchValue") String searchValue);
 }
