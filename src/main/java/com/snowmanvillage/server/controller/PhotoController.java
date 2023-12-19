@@ -87,4 +87,8 @@ public class PhotoController {
         return ResponseEntity.ok(photoService.unlikePhoto(requestDto.getPhoto_id()));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<PhotoResponseDto>> searchPhoto(@RequestParam(name = "searchType") String searchType, @RequestParam(name = "searchValue") String searchValue) {
+        return ResponseEntity.ok(photoService.searchPhoto(searchType, searchValue));
+    }
 }

@@ -82,4 +82,15 @@ public class PhotoService {
         photo.setLikeCount(photo.getLikeCount() - 1);
         return PhotoResponseDto.of(photo);
     }
+
+    public List<PhotoResponseDto> searchPhoto(String searchType, String searchValue) {
+        // searchType : TITLE, WRITER, LOCATION
+        List<Photo> photoList = switch (searchType) {
+            case "TITLE" -> photoRepository.findByTitleContaining(searchValue);
+            case "WRITER" -> photoRepository.findByUsernameContaining(searchValue);
+            case "LOCATION" -> locationRepository.findByLocationContaining(searchValue);
+            default -> throw new IllegalArgumentException("searchType 값이 잘못되었습니다.");
+        };
+        return PhotoResponseDto.listOf(photoList);
+    }
 }
