@@ -63,4 +63,17 @@ public class PhotoService {
         }
     }
 
+    @Transactional
+    public PhotoResponseDto likePhoto(Long photoId) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new IllegalArgumentException("해당 포토가 없습니다."));
+        photo.setLikeCount(photo.getLikeCount() + 1);
+        return PhotoResponseDto.of(photo);
+    }
+
+    @Transactional
+    public PhotoResponseDto unlikePhoto(Long photoId) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new IllegalArgumentException("해당 포토가 없습니다."));
+        photo.setLikeCount(photo.getLikeCount() - 1);
+        return PhotoResponseDto.of(photo);
+    }
 }

@@ -1,6 +1,7 @@
 package com.snowmanvillage.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snowmanvillage.server.dto.PhotoLikeRequestDto;
 import com.snowmanvillage.server.dto.PhotoRequestDto;
 import com.snowmanvillage.server.dto.PhotoResponseDto;
 import com.snowmanvillage.server.dto.PhotoUploadRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,4 +72,15 @@ public class PhotoController {
             return ResponseEntity.ok("포토 삭제 실패");
         }
     }
+
+    @PutMapping("/like")
+    public ResponseEntity<PhotoResponseDto> likePhoto(@RequestBody PhotoLikeRequestDto requestDto) {
+        return ResponseEntity.ok(photoService.likePhoto(requestDto.getPhoto_id()));
+    }
+
+    @PutMapping("/unlike")
+    public ResponseEntity<PhotoResponseDto> unlikePhoto(@RequestBody PhotoLikeRequestDto requestDto) {
+        return ResponseEntity.ok(photoService.unlikePhoto(requestDto.getPhoto_id()));
+    }
+
 }
