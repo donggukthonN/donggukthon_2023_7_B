@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class LocationRequestDto {
-    private String roadName;
-    private String lotNumber;
+    private String address;
     private Double latitude;
     private Double longitude;
 
     public Location toEntity(LocationRequestDto requestDto, Photo photo) {
         return Location.builder()
                 .photo(photo)
-                .roadName(requestDto.getRoadName())
-                .lotNumber(requestDto.getLotNumber())
+                .address(requestDto.getAddress())
                 .latitude(requestDto.getLatitude())
                 .longitude(requestDto.getLongitude())
                 .build();

@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.ErrorResponse;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -27,8 +27,10 @@ public class Photo extends BaseTimeEntity {
 
     private String username;
 
+    @Setter
     private String password;
 
+    @Setter
     @Column(name = "like_count")
     private Integer likeCount;
 
@@ -39,13 +41,5 @@ public class Photo extends BaseTimeEntity {
         this.username = username;
         this.password = password;
         this.likeCount = 0;
-    }
-
-    public void setPassword(String encodedPassword) {
-        this.password = encodedPassword;
-    }
-
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
     }
 }
