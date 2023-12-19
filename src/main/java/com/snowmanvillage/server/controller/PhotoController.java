@@ -1,10 +1,11 @@
 package com.snowmanvillage.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snowmanvillage.server.dto.PhotoLikeRequestDto;
-import com.snowmanvillage.server.dto.PhotoRequestDto;
-import com.snowmanvillage.server.dto.PhotoResponseDto;
-import com.snowmanvillage.server.dto.PhotoUploadRequestDto;
+import com.snowmanvillage.server.dto.req.LocationRequestDto;
+import com.snowmanvillage.server.dto.req.PhotoLikeRequestDto;
+import com.snowmanvillage.server.dto.req.PhotoRequestDto;
+import com.snowmanvillage.server.dto.resp.PhotoResponseDto;
+import com.snowmanvillage.server.dto.req.PhotoUploadRequestDto;
 import com.snowmanvillage.server.entity.Photo;
 import com.snowmanvillage.server.repository.PhotoRepository;
 import com.snowmanvillage.server.service.PasswordBCryptService;
@@ -42,10 +43,13 @@ public class PhotoController {
         }
         try {
             MultipartFile image = ((MultipartHttpServletRequest) httpServletRequest).getFile("image");
-            String request = httpServletRequest.getParameter("request");
-            PhotoUploadRequestDto requestDto = objectMapper.readValue(request, PhotoUploadRequestDto.class);
+            String photoRequest = httpServletRequest.getParameter("photoRequest");
+            String locationRequest = httpServletRequest.getParameter("locationRequest");
+            PhotoUploadRequestDto requestDto = objectMapper.readValue(photoRequest, PhotoUploadRequestDto.class);
+            LocationRequestDto locationRequestDto = objectMapper.readValue(locationRequest, LocationRequestDto.class);
             String encodedPassword = passwordBCryptService.encodePassword(requestDto.getPassword());
-            Photo savedPhoto = photoService.uploadPhoto(image, requestDto);
+
+            Photo savedPhoto = photoService.uploadPhoto(image, requestDto, locationRequestDto);
             savedPhoto.setPassword(encodedPassword);
             photoRepository.save(savedPhoto);
             return ResponseEntity.ok("포토 등록 완료");
