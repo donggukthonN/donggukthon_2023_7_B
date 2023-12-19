@@ -2,7 +2,7 @@
 debug: false
 logging:
   level:
-    com.platform.match: debug
+    com.snowmanvillage.server: debug
     org.springframework.web.servlet: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
 spring:
