@@ -1,9 +1,11 @@
 package com.snowmanvillage.server.service;
 
-import com.snowmanvillage.server.dto.PhotoResponseDto;
-import com.snowmanvillage.server.dto.PhotoUploadRequestDto;
+import com.snowmanvillage.server.dto.req.LocationRequestDto;
+import com.snowmanvillage.server.dto.resp.PhotoResponseDto;
+import com.snowmanvillage.server.dto.req.PhotoUploadRequestDto;
 import com.snowmanvillage.server.entity.Photo;
 import com.snowmanvillage.server.entity.global.BaseTimeEntity;
+import com.snowmanvillage.server.repository.LocationRepository;
 import com.snowmanvillage.server.repository.PhotoRepository;
 import jakarta.transaction.Transactional;
 import java.util.Comparator;
@@ -20,14 +22,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class PhotoService {
 
     private final PhotoRepository photoRepository;
+    private final LocationRepository locationRepository;
     private final PasswordBCryptService passwordBCryptService;
 
     @Autowired
     private S3Uploader s3Uploader;
 
-    public Photo uploadPhoto(MultipartFile image, PhotoUploadRequestDto requestDto) {
+    public Photo uploadPhoto(MultipartFile image, PhotoUploadRequestDto requestDto,
+                             LocationRequestDto locationRequestDto) {
         String photoUrl = s3Uploader.upload(image, "images");
-        return photoRepository.save(requestDto.toEntity(photoUrl, requestDto));
+        Photo savedPhoto = photoRepository.save(requestDto.toEntity(photoUrl, requestDto));
+        locationRepository.save(locationRequestDto.toEntity(locationRequestDto, savedPhoto));
+        return savedPhoto;
     }
 
     public PhotoResponseDto getPhotoByPhotoId(Long id) {
@@ -75,5 +81,16 @@ public class PhotoService {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new IllegalArgumentException("해당 포토가 없습니다."));
         photo.setLikeCount(photo.getLikeCount() - 1);
         return PhotoResponseDto.of(photo);
+    }
+
+    public List<PhotoResponseDto> searchPhoto(String searchType, String searchValue) {
+        // searchType : TITLE, WRITER, LOCATION
+        List<Photo> photoList = switch (searchType) {
+            case "TITLE" -> photoRepository.findByTitleContaining(searchValue);
+            case "WRITER" -> photoRepository.findByUsernameContaining(searchValue);
+            case "LOCATION" -> locationRepository.findByLocationContaining(searchValue);
+            default -> throw new IllegalArgumentException("searchType 값이 잘못되었습니다.");
+        };
+        return PhotoResponseDto.listOf(photoList);
     }
 }
