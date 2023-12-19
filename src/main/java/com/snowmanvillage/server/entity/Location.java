@@ -28,18 +28,15 @@ public class Location extends BaseTimeEntity {
     @JoinColumn(name="photo_id")
     private Photo photo;
 
-    private String roadName;
-
-    private String lotNumber;
+    private String address;
 
     private Double latitude;
 
     private Double longitude;
 
     @Builder
-    public Location(String roadName, String lotNumber, Double latitude, Double longitude) {
-        this.roadName = roadName;
-        this.lotNumber = lotNumber;
+    public Location(String address, Double latitude, Double longitude) {
+        this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
     }
