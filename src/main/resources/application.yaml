@@ -44,3 +44,7 @@ cloud:
         auto: false
     s3:
       bucket: ${S3_BUCKET}
+
+google:
+  maps:
+    api-key: ${GEO_API_KEY}

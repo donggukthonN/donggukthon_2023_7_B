@@ -36,6 +36,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // google cloud vision api
     implementation 'com.google.cloud:spring-cloud-gcp-starter-vision:4.9.0'
+    // google geo api
+    implementation 'com.google.maps:google-maps-services:2.1.2'
 }
 
 tasks.named('test') {
