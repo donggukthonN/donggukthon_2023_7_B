@@ -60,7 +60,7 @@ public class PhotoService {
     @Transactional
     public String deletePhoto(Long photoId, String password) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new IllegalArgumentException("해당 포토가 없습니다."));
-        log.info("password: {}, photo get password : {} ", password, photo.getPassword());
+        locationRepository.findByPhoto(photo).ifPresent(locationRepository::delete);
         if (passwordBCryptService.matchPassword(password, photo.getPassword())) {
             photoRepository.delete(photo);
             return "포토 삭제 완료";
