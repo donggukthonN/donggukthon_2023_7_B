@@ -33,7 +33,7 @@ Frontend Repository : [💻snowman village - Frontend](https://github.com/donggu
     - Google GeoCoding API
 
 ### 시스템 구성도
-![image](C:\Users\kimmj\Pictures\donggukthon_7.png)
+<img width="800" alt="donggukthon_7_architecture_design" src="https://github.com/donggukthonN/donggukthon_2023_7_B/assets/91234288/febbb6b4-0121-4a38-b63a-309f722459d6">
 
 ## 🧑‍💻 팀 소개
 
