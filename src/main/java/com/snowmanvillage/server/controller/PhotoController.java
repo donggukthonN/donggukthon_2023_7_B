@@ -73,7 +73,7 @@ public class PhotoController {
         try {
             return ResponseEntity.ok(photoService.deletePhoto(photoId, requestDto.getPassword()));
         } catch (Exception e) {
-            return ResponseEntity.ok("포토 삭제 실패");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
