@@ -16,14 +16,31 @@ spring:
   jpa:
     defer-datasource-initialization: true
     # for dev
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: update
     show-sql: true
     properties:
       hibernate.format_sql: true
       hibernate.default_batch_fetch_size: 1000
   # use data.sql file for dummy data
   sql.init.mode: always
+  # s3 multipart file config
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 cors:
   allowed-origin-dev: ${ALLOWED_ORIGIN_DEV}
   allowed-origin-deploy: ${ALLOWED_ORIGIN_DEPLOY}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${ACCESS_KEY}
+      secretKey: ${SECRET_KEY}
+    region:
+      static: ${REGION}
+    stack:
+        auto: false
+    s3:
+      bucket: ${S3_BUCKET}
