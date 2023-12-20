@@ -1,15 +1,21 @@
 package com.snowmanvillage.server.service;
 
+import com.google.maps.model.LatLng;
 import com.snowmanvillage.server.dto.req.LocationRequestDto;
 import com.snowmanvillage.server.dto.resp.PhotoResponseDto;
 import com.snowmanvillage.server.dto.req.PhotoUploadRequestDto;
+import com.snowmanvillage.server.entity.Location;
 import com.snowmanvillage.server.entity.Photo;
 import com.snowmanvillage.server.entity.global.BaseTimeEntity;
 import com.snowmanvillage.server.repository.LocationRepository;
 import com.snowmanvillage.server.repository.PhotoRepository;
 import jakarta.transaction.Transactional;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +30,7 @@ public class PhotoService {
     private final PhotoRepository photoRepository;
     private final LocationRepository locationRepository;
     private final PasswordBCryptService passwordBCryptService;
+    private final GoogleGeocodingService googleGeocodingService;
 
     @Autowired
     private S3Uploader s3Uploader;
@@ -88,9 +95,30 @@ public class PhotoService {
         List<Photo> photoList = switch (searchType) {
             case "TITLE" -> photoRepository.findByTitleContaining(searchValue);
             case "WRITER" -> photoRepository.findByUsernameContaining(searchValue);
-            case "LOCATION" -> locationRepository.findByLocationContaining(searchValue);
+            case "LOCATION" -> searchPhotoByLocation(searchValue);
             default -> throw new IllegalArgumentException("searchType 값이 잘못되었습니다.");
         };
         return PhotoResponseDto.listOf(photoList);
+    }
+
+    public List<Photo> searchPhotoByLocation(String searchValue) {
+        Map<String, LatLng> locationWithBounds =
+            googleGeocodingService.getLocationWithBounds(searchValue);
+        LatLng northEast = locationWithBounds.get("northEast");
+        LatLng southWest = locationWithBounds.get("southWest");
+
+        List<Photo> photoListByLocationContaining = locationRepository.findByLocationContaining(searchValue);
+        List<Photo> photoListByGeocoding = locationRepository.findAll()
+            .stream()
+            .filter(location -> location.getLongitude() != null && location.getLatitude() != null)
+            .filter(location -> location.getLatitude() >= southWest.lat && location.getLatitude() <= northEast.lat
+                && location.getLongitude() >= southWest.lng && location.getLongitude() <= northEast.lng)
+            .map(location -> photoRepository.findById(location.getPhoto().getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 포토가 없습니다.")))
+            .toList();
+
+        Set<Photo> photoSet = new HashSet<>(photoListByLocationContaining);
+        photoSet.addAll(photoListByGeocoding);
+        return photoSet.stream().toList();
     }
 }
